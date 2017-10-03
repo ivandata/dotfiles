@@ -42,6 +42,7 @@ fi
 ask_question "Warning: This step may modify your OS X system defaults."
 
 if is_confirmed; then
+    mkdir ${HOME}/Pictures/Screenshots
     sh ./macos.sh
     success_message "OS X settings updated! You may need to restart."
 else
