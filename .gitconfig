@@ -17,17 +17,17 @@
 	# Clean untracked files
 	cuf = clean -f
 
-	# Commit 
-	c = commit -am 
+	# Commit All
+	c = commit -am
+
+	# Checkout
+    go = checkout -f
 
     # Reset commit but leave files and index:
     rst = reset --soft HEAD~1
 
 	# Pull
 	up = pull --ff-only
-
-	# Commit all changes
-	ca = !git add -A && git commit -av
 
 	# Show verbose output about tags, branches or remotes
 	tags = tag -l
