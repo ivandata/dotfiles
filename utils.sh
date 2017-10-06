@@ -14,7 +14,7 @@ print_in_yellow() {
 }
 
 print_in_white() {
-    printf "$(tput setaf 004) $1 \n"
+    printf "$(tput setaf 007) $1 \n"
 }
 
 # Messages and questions
@@ -26,7 +26,7 @@ ask_question() {
 }
 
 header_message() {
-    print_in_white "$1\n"
+    print_in_white "[.] $1"
 }
 
 warning_message() {
