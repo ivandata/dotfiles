@@ -1,8 +1,5 @@
 #!/usr/bin/env bash
 
-# Finder
-# ----------------------------------------------------------------------
-
 echo "Finder: show all filename extensions"
 defaults write NSGlobalDomain AppleShowAllExtensions -bool true
 
@@ -30,12 +27,15 @@ defaults write com.apple.LaunchServices LSQuarantine -bool false
 echo "Disable auto-correct"
 defaults write NSGlobalDomain NSAutomaticSpellingCorrectionEnabled -bool false
 
+if [[ ! -d ${HOME}/Pictures/Screenshots ]]; then
+    echo "Create Pictures/Screenshots folder"
+    mkdir ${HOME}/Pictures/Screenshots
+fi
 echo "Save screenshots to the Pictures/Screenshots"
 defaults write com.apple.screencapture location -string "${HOME}/Pictures/Screenshots"
 
 echo "Save screenshots in PNG format (other options: BMP, GIF, JPG, PDF, TIFF)"
 defaults write com.apple.screencapture type -string "png"
-
 
 echo "Disable the sound effects on boot"
 sudo nvram SystemAudioVolume=" "
