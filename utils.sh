@@ -2,43 +2,42 @@
 
 # Print in colors
 print_in_red() {
-    printf "$(tput setaf 001) $1 \n"
+    printf "$(tput setaf 001)$1"
 }
 
 print_in_green() {
-    printf "$(tput setaf 002) $1 \n"
+    printf "$(tput setaf 002)$1"
 }
 
 print_in_yellow() {
-    printf "$(tput setaf 003) $1 \n"
+    printf "$(tput setaf 003)$1"
 }
 
 print_in_white() {
-    printf "$(tput setaf 007) $1 \n"
+    printf "$(tput setaf 007)$1"
 }
 
 # Messages and questions
 ask_question() {
     printf "\n"
-    print_in_yellow "[?] $@"
-    read -p "Continue? (y/n) " -n 1;
+    read -p "$(tput setaf 003)[?] $(tput sgr0)$@ Continue? (y/n) " -n 1;
     printf "\e[mR\n"
 }
 
 header_message() {
-    print_in_white "[.] $1"
+    print_in_white "[➜] $(tput sgr0)$1 \n"
 }
 
 warning_message() {
-    print_in_yellow "[!] $1\n"
+    print_in_yellow "[!] $(tput sgr0)$1 \n";
 }
 
 success_message() {
-    print_in_green "[✔] $1\n"
+    print_in_green "[✔] $(tput sgr0)$1 \n";
 }
 
 error_message() {
-    print_in_red "[✖] $1 $2\n"
+    print_in_red "[✖] $(tput sgr0)$1 \n";
 }
 
 # Test whether the result of an 'ask' is a confirmation
