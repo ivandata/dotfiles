@@ -15,6 +15,7 @@ EOT
 echo "";
 read -p "$(tput bold)$(tput setaf 003)[?] $(tput sgr0)$(tput bold)This installation may overwrite existing files in your home directory. $(tput bold)$(tput setaf 003)Are you sure? (y/n) " -n 1;
 printf "\e[mR\n";
+
 if [[ "$REPLY" =~ ^[Yy]$ ]]; then
     START_TIME=$SECONDS
     echo "";
@@ -32,46 +33,58 @@ do
     esac
 done
 
-install_dotfiles() {
+download_dotfiles() {
     printf "$(tput setaf 007) Downloading dotfiles...\033[m\n";
     mkdir ${DOTFILES_INSTALL_DIRECTORY};
-    # Get the tarball
     curl -fsSLo ${DOTFILES_INSTALL_DIRECTORY}/dotfiles.tar.gz ${DOTFILES_TARBALL_PATH};
 
     printf "$(tput setaf 007) Extract dotfiles...\033[m\n";
     tar -zxf ${DOTFILES_INSTALL_DIRECTORY}/dotfiles.tar.gz --strip-components 1 -C ${DOTFILES_INSTALL_DIRECTORY};
 
+    printf "$(tput setaf 002) [✔] Download complete. \n";
+}
+
+copy_dotfiles() {
     printf "$(tput setaf 007) Copy dotfiles into .dotfiles directory...\033[m\n";
     rsync --exclude ".git/" \
           --exclude ".DS_Store" \
           --exclude "README.md" \
           --exclude ".gitignore" \
           --exclude ".idea/" \
+          --exclude "init/" \
           --exclude "install.sh" \
+          --exclude "utils.sh" \
           -a "${DOTFILES_INSTALL_DIRECTORY}/" "${DOTFILES_DIRECTORY}";
+}
 
-    printf "$(tput setaf 007) Remove temp folder...\033[m\n";
+remove_install_directory() {
+    printf "$(tput setaf 007) Remove dotfiles install directory...\033[m\n";
     rm -rf ${DOTFILES_INSTALL_DIRECTORY};
-    printf "$(tput setaf 002) [✔] Download complete. \n";
+    printf "$(tput setaf 002) [✔] dotfiles install directory removed. \033[m\n";
 }
 
 # If missing, make dir, download and extract the dotfiles repository
 if [[ ! -d ${DOTFILES_DIRECTORY} ]]; then
     mkdir ${DOTFILES_DIRECTORY};
-    install_dotfiles
+    download_dotfiles
 elif [[ ${update} ]]; then
-    install_dotfiles
+    download_dotfiles
+else
+    printf "$(tput setaf 003) dotfiles already installed. If you need update dotfiles, please run installation with --up flag.";
+    printf "\e[mR\n";
+    remove_install_directory
+    exit 1;
 fi
 
-rsync --exclude ".git/" \
-      --exclude ".DS_Store" \
-      --exclude "README.md" \
-      --exclude ".gitignore" \
-      --exclude ".idea/" \
-      --exclude "install.sh" \
-      -a "${HOME}/repo/dotfiles/" "${DOTFILES_DIRECTORY}";
+#rsync --exclude ".git/" \
+#      --exclude ".DS_Store" \
+#      --exclude "README.md" \
+#      --exclude ".gitignore" \
+#      --exclude ".idea/" \
+#      --exclude "install.sh" \
+#      -a "${HOME}/repo/dotfiles/" "${DOTFILES_DIRECTORY}";
 
-cd ${DOTFILES_DIRECTORY};
+cd ${DOTFILES_INSTALL_DIRECTORY};
 
 source ./utils.sh;
 
