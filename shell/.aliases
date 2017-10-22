@@ -1,0 +1,30 @@
+#!/bin/bash
+
+# bash_aliases
+
+# Easier navigation: .., ... and ~
+alias ..="cd .."
+alias ...="cd ../.."
+alias ~="cd ~"
+
+# List dir contents aliases
+# ref: http://ss64.com/osx/ls.html
+# Long form no user group, color
+alias l="ls -oG"
+
+# Copy my public key to the pasteboard
+alias pubkey="more ~/.ssh/id_rsa.pub | pbcopy | printf '=> Public key copied to pasteboard.\n'"
+
+# IP addresses
+alias ip="dig +short myip.opendns.com @resolver1.opendns.com"
+alias localip="ipconfig getifaddr en1"
+
+# Preferred 'mkdir' implementation
+alias mkdir='mkdir -pv'
+
+# Preferred 'cp' implementation
+alias cp='cp -iv'
+
+# Preferred 'mv' implementation
+alias mv='mv -iv'
+

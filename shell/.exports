@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+
+# Add `~/bin` to the `$PATH`
+export PATH="$HOME/bin:$PATH";
+
+export NVM_DIR="$HOME/.nvm";
+
+export NODE_ENV=development;
+
+export DOTFILES_DIRECTORY="${HOME}/.dotfiles";
