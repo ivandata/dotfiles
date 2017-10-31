@@ -42,9 +42,11 @@ error_message() {
 
 # Test whether the result of an 'ask' is a confirmation
 is_confirmed() {
+
     if [[ "$REPLY" =~ ^[Yy]$ ]]; then
       return 0
     fi
+
     return 1
 }
 
@@ -56,8 +58,29 @@ link() {
 # Test whether a command exists
 # $1 - cmd to test
 command_exists() {
+
     if [ $(type -P $1) ]; then
       return 0
     fi
+
     return 1
+
+}
+
+# Ask for the administrator password upfront.
+ask_for_sudo() {
+
+    sudo -v &> /dev/null
+
+    # Update existing `sudo` time stamp
+    # until this script has finished.
+    #
+    # https://gist.github.com/cowboy/3118588
+
+    while true; do
+        sudo -n true
+        sleep 60
+        kill -0 "$$" || exit
+    done &> /dev/null &
+
 }
