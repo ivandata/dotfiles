@@ -13,6 +13,7 @@ fi
 
 source ${DOTFILES_DIRECTORY}/.exports # Exports
 source ${DOTFILES_DIRECTORY}/.aliases # Aliases
-if [[ ! -d ${HOME}/.bash_profile.local ]]; then
+
+if [[ -d ${HOME}/.bash_profile.local ]]; then
     source ${HOME}/.bash_profile.local
 fi
