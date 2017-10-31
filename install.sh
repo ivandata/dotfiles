@@ -1,9 +1,11 @@
 #!/usr/bin/env bash
 
-DOTFILES_DIRECTORY="${HOME}/.dotfiles";
-DOTFILES_INSTALL_DIRECTORY="${HOME}/.dotfiles/temp";
-DOTFILES_TARBALL_PATH="https://github.com/ivandata/dotfiles/tarball/master";
-DOTFILES_GIT_REMOTE="git@github.com:ivandata/dotfiles.git"
+declare -r GITHUB_REPOSITORY="ivandata/dotfiles"
+
+declare -r DOTFILES_DIRECTORY="${HOME}/.dotfiles";
+declare -r DOTFILES_INSTALL_DIRECTORY="${HOME}/.dotfiles/temp";
+declare -r DOTFILES_TARBALL_PURL="https://github.com/$GITHUB_REPOSITORY/tarball/master";
+declare -r DOTFILES_ORIGIN="git@github.com:$GITHUB_REPOSITORY.git"
 
 cat <<EOT
 OS X dotfiles - Ivan Malov - https://github.com/ivandata
@@ -36,7 +38,7 @@ done
 download_dotfiles() {
     printf "$(tput setaf 007) Downloading dotfiles...\033[m\n";
     mkdir ${DOTFILES_INSTALL_DIRECTORY};
-    curl -fsSLo ${DOTFILES_INSTALL_DIRECTORY}/dotfiles.tar.gz ${DOTFILES_TARBALL_PATH};
+    curl -fsSLo ${DOTFILES_INSTALL_DIRECTORY}/dotfiles.tar.gz ${DOTFILES_TARBALL_PURL};
 
     printf "$(tput setaf 007) Extract dotfiles...\033[m\n";
     tar -zxf ${DOTFILES_INSTALL_DIRECTORY}/dotfiles.tar.gz --strip-components 1 -C ${DOTFILES_INSTALL_DIRECTORY};
@@ -54,7 +56,7 @@ copy_dotfiles() {
           --exclude "init.sh" \
           --exclude "install.sh" \
           --exclude "utils.sh" \
-          -a "${DOTFILES_INSTALL_DIRECTORY}/" "${DOTFILES_DIRECTORY}";
+          -a "${DOTFILES_INSTALL_DIRECTORY}/shell/" "${DOTFILES_DIRECTORY}";
 }
 
 remove_install_directory() {
@@ -88,14 +90,13 @@ if is_confirmed; then
     link ${DOTFILES_DIRECTORY} ".gitconfig" ".gitconfig";
     link ${DOTFILES_DIRECTORY} ".bash_profile" ".bash_profile";
     link ${DOTFILES_DIRECTORY} ".zshrc"  ".zshrc";
+    link ${DOTFILES_DIRECTORY} ".aliases"  ".aliases";
     success_message "Dotfiles update complete!";
     source ${HOME}/.bash_profile
 else
     printf "Aborting...\n"
     exit 1
 fi
-
-cd ${DOTFILES_DIRECTORY};
 
 # Ask before potentially overwriting OS X defaults
 ask_question "Warning: This step may modify your OS X system defaults.";
