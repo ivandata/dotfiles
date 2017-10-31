@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-DOTFILES_DIRECTORY="${HOME}/.dotfiles"
+declare DOTFILES_DIRECTORY="${HOME}/.dotfiles"
 
 # set 256 color profile where possible
 if [[ $COLORTERM == gnome-* && $TERM == xterm ]] && infocmp gnome-256color >/dev/null 2>&1; then
@@ -13,4 +13,6 @@ fi
 
 source ${DOTFILES_DIRECTORY}/.exports # Exports
 source ${DOTFILES_DIRECTORY}/.aliases # Aliases
-source $HOME/.bash_profile.local
+if [[ ! -d ${HOME}/.bash_profile.local ]]; then
+    source ${HOME}/.bash_profile.local
+fi

@@ -1,7 +1,5 @@
 #!/usr/bin/env bash
 
-DOTFILES_DIRECTORY="${HOME}/.dotfiles";
-
 source ./utils.sh;
 
 # Before relying on Homebrew, check that packages can be compiled
