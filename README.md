@@ -9,7 +9,7 @@ understand [what it does](install.sh). Seriously, **DON'T**!)
 
 To set up the dotfiles just run the appropriate snippet in the terminal:
 ```bash
-bash -c "$(curl -LsS raw.github.com/ivandata/dotfiles/master/install)"
+bash -c "$(curl -LsS raw.github.com/ivandata/dotfiles/master/install.sh)"
 ```
 
 The setup process will:
