@@ -9,10 +9,8 @@ elif infocmp xterm-256color >/dev/null 2>&1; then
     export TERM=xterm-256color
 fi
 
-source ${DOTFILES_DIRECTORY}/.exports # Exports
-source ${DOTFILES_DIRECTORY}/.aliases # Aliases
-
 [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"
 
-
-unset load_dotfiles
+source ${DOTFILES_DIRECTORY}/.exports # Exports
+source ${DOTFILES_DIRECTORY}/.aliases # Aliases
+source $HOME/.bash_profile.local
