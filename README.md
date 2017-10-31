@@ -3,8 +3,9 @@ My OS X dotfiles. These are the base dotfiles that I start with when I set up a 
 
 ## How to install 
 The installation overwrite existing dotfiles in HOME directories. 
+
 (:warning: **DO NOT** run the `setup` snippet if you don't fully
-understand [what it does](install). Seriously, **DON'T**!)
+understand [what it does](install.sh). Seriously, **DON'T**!)
 
 To set up the dotfiles just run the appropriate snippet in the terminal:
 ```bash
