@@ -55,6 +55,7 @@ plugins=(git node iwhois)
 
 source $ZSH/oh-my-zsh.sh
 source $HOME/.bash_profile
+source $HOME/.nvm/nvm.sh
 
 # User configuration
 
