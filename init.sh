@@ -57,7 +57,9 @@ fi
 # Check for oh-my-zsh
 header_message "Checking nvm...";
 if ! command_exists 'nvm'; then
- git clone https://github.com/creationix/nvm.git "$NVM_DIR";
+ if [[ ! -d ${NVM_DIR} ]]; then
+  git clone https://github.com/creationix/nvm.git "$NVM_DIR";
+ fi
  cd "$NVM_DIR";
  git checkout `git describe --abbrev=0 --tags --match "v[0-9]*" $(git rev-list --tags --max-count=1)`
  \. "$NVM_DIR/nvm.sh"
