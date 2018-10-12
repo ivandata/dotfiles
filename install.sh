@@ -81,7 +81,6 @@ fi
 cd ${DOTFILES_INSTALL_DIRECTORY};
 
 source ./utils.sh;
-source ./init.sh;
 
 # Ask before potentially overwriting files
 ask_question "Warning: This step may overwrite your existing dotfiles."
@@ -96,6 +95,8 @@ else
     printf "Aborting...\n"
     exit 1
 fi
+
+source ./init.sh;
 
 # Ask before potentially overwriting OS X defaults
 ask_question "Warning: This step may modify your OS X system defaults.";

@@ -48,9 +48,19 @@ if [ ! -n "$ZSH" ]; then
     header_message "Installing oh-my-zsh..."
     export ZSH="${DOTFILES_DIRECTORY}/oh-my-zsh";
     git clone https://github.com/robbyrussell/oh-my-zsh.git ${ZSH}
-
     link ${DOTFILES_DIRECTORY} ".zshrc"  ".zshrc";
     chsh -s /bin/zsh
 else
     success_message "oh-my-zsh already installed.";
+fi
+
+# Check for oh-my-zsh
+header_message "Checking nvm...";
+if ! command_exists 'nvm'; then
+ git clone https://github.com/creationix/nvm.git "$NVM_DIR";
+ cd "$NVM_DIR";
+ git checkout `git describe --abbrev=0 --tags --match "v[0-9]*" $(git rev-list --tags --max-count=1)`
+ \. "$NVM_DIR/nvm.sh"
+else
+    success_message "nvm already installed.";
 fi
