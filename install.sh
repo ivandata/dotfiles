@@ -69,15 +69,19 @@ remove_install_directory() {
 # If missing, make dir, download and extract the dotfiles repository
 if [[ ! -d ${DOTFILES_DIRECTORY} ]]; then
     mkdir ${DOTFILES_DIRECTORY};
-    download_dotfiles
-elif [[ ${update} ]]; then
-    download_dotfiles
-else
-    printf "$(tput setaf 003) dotfiles already installed. If you need update dotfiles, please run installation with --up flag.";
-    printf "\e[mR\n";
-    remove_install_directory
-    exit 1;
 fi
+download_dotfiles
+#if [[ ! -d ${DOTFILES_DIRECTORY} ]]; then
+#    mkdir ${DOTFILES_DIRECTORY};
+#    download_dotfiles
+#elif [[ ${update} ]]; then
+#    download_dotfiles
+#else
+#    printf "$(tput setaf 003) dotfiles already installed. If you need update dotfiles, please run installation with --up flag.";
+#    printf "\e[mR\n";
+#    remove_install_directory
+#    exit 1;
+#fi
 
 cd ${DOTFILES_INSTALL_DIRECTORY};
 
