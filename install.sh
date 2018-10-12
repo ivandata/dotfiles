@@ -89,7 +89,6 @@ if is_confirmed; then
     copy_dotfiles
     link ${DOTFILES_DIRECTORY} ".gitconfig" ".gitconfig";
     link ${DOTFILES_DIRECTORY} ".bash_profile" ".bash_profile";
-    link ${DOTFILES_DIRECTORY} ".zshrc"  ".zshrc";
     link ${DOTFILES_DIRECTORY} ".aliases"  ".aliases";
     success_message "Dotfiles update complete!";
     source ${HOME}/.bash_profile
