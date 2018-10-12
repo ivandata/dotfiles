@@ -26,7 +26,7 @@ fi
 header_message "Checking Homebrew...";
 if ! command_exists 'brew'; then
     header_message "Installing Homebrew...";
-    ruby -e "$(curl -fsSkL raw.github.com/mxcl/homebrew/go)";
+    ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)";
 else
     success_message "Homebrew already installed.";
 fi
