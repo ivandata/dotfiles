@@ -56,7 +56,8 @@ copy_dotfiles() {
           --exclude "init.sh" \
           --exclude "install.sh" \
           --exclude "utils.sh" \
-          -a "${DOTFILES_INSTALL_DIRECTORY}/shell/" "${DOTFILES_DIRECTORY}";
+          -a "${DOTFILES_INSTALL_DIRECTORY}/shell/" "${DOTFILES_DIRECTORY}" \
+          -a "${DOTFILES_INSTALL_DIRECTORY}/themes/" "${DOTFILES_DIRECTORY}";
 }
 
 remove_install_directory() {
