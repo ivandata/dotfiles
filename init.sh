@@ -46,7 +46,11 @@ fi
 header_message "Checking oh-my-zsh...";
 if [ ! -n "$ZSH" ]; then
     header_message "Installing oh-my-zsh..."
-    export ZSH="${DOTFILES_DIRECTORY}/oh-my-zsh"; sh -c "$(curl -fsSL https://raw.githubusercontent.com/robbyrussell/oh-my-zsh/master/tools/install.sh)";
+    export ZSH="${DOTFILES_DIRECTORY}/oh-my-zsh";
+    git clone https://github.com/robbyrussell/oh-my-zsh.git ${ZSH}
+
+    link ${DOTFILES_DIRECTORY} ".zshrc"  ".zshrc";
+    chsh -s /bin/zsh
 else
     success_message "oh-my-zsh already installed.";
 fi
