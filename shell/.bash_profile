@@ -9,8 +9,8 @@ fi
 
 [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"
 
-source ${DOTFILES_DIRECTORY}/.exports # Exports
-source ${DOTFILES_DIRECTORY}/.aliases # Aliases
+source $HOME/.dotfiles/.exports # Exports
+source $HOME/.dotfiles/.aliases # Aliases
 
 if [[ -d ${HOME}/.bash_profile.local ]]; then
     source ${HOME}/.bash_profile.local

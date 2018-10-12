@@ -61,6 +61,7 @@ if ! command_exists 'nvm'; then
  cd "$NVM_DIR";
  git checkout `git describe --abbrev=0 --tags --match "v[0-9]*" $(git rev-list --tags --max-count=1)`
  \. "$NVM_DIR/nvm.sh"
+ success_message "nvm installed!"
 else
     success_message "nvm already installed.";
 fi
