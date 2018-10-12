@@ -2,11 +2,14 @@
 	name = Ivandata
 	email = ivandata@users.noreply.github.com
 [credential]
-	
+
+[core]
+  autocrlf = input
+
 [alias]
 
-    # Get the current branch name (not so useful in itself, but used in other aliases)
-    branch-name = "!git rev-parse --abbrev-ref HEAD"
+  # Get the current branch name (not so useful in itself, but used in other aliases)
+  branch-name = "!git rev-parse --abbrev-ref HEAD"
 
 	# View abbreviated SHA, description, and history graph of the latest 20 commits
 	lg = log --color --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit --
@@ -21,13 +24,13 @@
 	c = commit -am
 
 	# Checkout
-    go = checkout -f
+  go = checkout -f
 
-    # New branch from current
-    new = checkout -fb
+  # New branch from current
+  new = checkout -fb
 
-    # Reset commit but leave files and index:
-    rst = reset --soft HEAD~1
+  # Reset commit but leave files and index:
+  rst = reset --soft HEAD~1
 
 	# Pull
 	up = pull --ff-only
