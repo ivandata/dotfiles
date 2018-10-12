@@ -44,7 +44,7 @@ fi
 
 # Check for oh-my-zsh
 header_message "Checking oh-my-zsh...";
-if [ ! -n "$ZSH" ]; then
+if ! command_exists 'uninstall_oh_my_zsh' ; then
     header_message "Installing oh-my-zsh..."
     export ZSH="${DOTFILES_DIRECTORY}/oh-my-zsh";
     git clone https://github.com/robbyrussell/oh-my-zsh.git ${ZSH}
