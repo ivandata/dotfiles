@@ -15,3 +15,4 @@ source $HOME/.dotfiles/.aliases # Aliases
 if [[ -d ${HOME}/.bash_profile.local ]]; then
     source ${HOME}/.bash_profile.local
 fi
+
