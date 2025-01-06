@@ -1,43 +1,33 @@
 #!/usr/bin/env bash
 
-echo "Finder: show all filename extensions"
-defaults write NSGlobalDomain AppleShowAllExtensions -bool true
+# Load utilities
+source ./utils.sh
 
-echo "Finder: disable the warning when changing a file extension"
-defaults write com.apple.finder FXEnableExtensionChangeWarning -bool false
+header_message "Applying macOS system preferences..."
 
-echo "Finder: show hidden files by default"
-defaults write com.apple.finder AppleShowAllFiles -bool true
+# General UI/UX
+defaults write NSGlobalDomain AppleShowScrollBars -string "Always" # Always show scrollbars
+defaults write com.apple.menuextra.battery ShowPercent -string "YES" # Show battery percentage
 
-echo "Finder: display full POSIX path as window title"
-defaults write com.apple.finder _FXShowPosixPathInTitle -bool true
+# Finder
+defaults write com.apple.finder ShowPathbar -bool true # Show path bar in Finder
+defaults write com.apple.finder ShowStatusBar -bool true # Show status bar in Finder
+defaults write com.apple.finder FXPreferredViewStyle -string "Nlsv" # Use list view in Finder by default
 
-echo "Finder: always show scrollbars (possible values: WhenScrolling, Automatic, Always"
-defaults write NSGlobalDomain AppleShowScrollBars -string "Always"
+# Dock
+defaults write com.apple.dock autohide -bool true # Auto-hide Dock
+defaults write com.apple.dock tilesize -int 36 # Set Dock tile size
 
-echo "Finder: show icons for hard drives, servers, and removable media on the desktop"
-defaults write com.apple.finder ShowExternalHardDrivesOnDesktop -bool true
-defaults write com.apple.finder ShowHardDrivesOnDesktop -bool true
-defaults write com.apple.finder ShowMountedServersOnDesktop -bool true
-defaults write com.apple.finder ShowRemovableMediaOnDesktop -bool true
+# Screenshots
+defaults write com.apple.screencapture location -string "${HOME}/Screenshots" # Save screenshots to ~/Screenshots
+mkdir -p "${HOME}/Screenshots"
 
-echo "Disable the “Are you sure you want to open this application?” dialog"
-defaults write com.apple.LaunchServices LSQuarantine -bool false
+# Safari
+defaults write com.apple.Safari ShowFullURLInSmartSearchField -bool true # Show full URL in Safari's address bar
 
-echo "Disable auto-correct"
-defaults write NSGlobalDomain NSAutomaticSpellingCorrectionEnabled -bool false
-
-if [[ ! -d ${HOME}/Pictures/Screenshots ]]; then
-    echo "Create Pictures/Screenshots folder"
-    mkdir ${HOME}/Pictures/Screenshots
-fi
-echo "Save screenshots to the Pictures/Screenshots"
-defaults write com.apple.screencapture location -string "${HOME}/Pictures/Screenshots"
-
-echo "Save screenshots in PNG format (other options: BMP, GIF, JPG, PDF, TIFF)"
-defaults write com.apple.screencapture type -string "png"
-
-echo "Disable the sound effects on boot"
-sudo nvram SystemAudioVolume=" "
-
+# Restart services to apply changes
 killall Finder
+killall Dock
+killall SystemUIServer
+
+success_message "macOS system preferences applied!"

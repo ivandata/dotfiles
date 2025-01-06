@@ -87,6 +87,7 @@ main() {
   link "${DOTFILES_DIRECTORY}" ".gitconfig" ".gitconfig"
   link "${DOTFILES_DIRECTORY}" ".bash_profile" ".bash_profile"
   link "${DOTFILES_DIRECTORY}" ".zshrc" ".zshrc"
+  link "${DOTFILES_DIRECTORY}" ".convco" ".convco"
 
   remove_install_directory
   success_message "Dotfiles installation complete!"

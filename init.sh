@@ -91,6 +91,17 @@ install_browsers() {
   done
 }
 
+
+# Apply macOS-specific settings
+apply_macos_settings() {
+  header_message "Applying macOS system preferences..."
+  if [ -f ./macos.sh ]; then
+    bash ./macos.sh || handle_error "Failed to apply macOS system preferences."
+  else
+    warning_message "macos.sh not found. Skipping macOS settings."
+  fi
+}
+
 # Main setup steps
 main() {
   install_xcode_cli_tools
@@ -101,6 +112,7 @@ main() {
   install_ghostty
   install_convco
   install_fnm
+  apply_macos_settings
 }
 
 main
