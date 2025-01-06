@@ -58,13 +58,7 @@ link() {
 # Test whether a command exists
 # $1 - cmd to test
 command_exists() {
-
-    if [ $(type -P $1) ]; then
-      return 0
-    fi
-
-    return 1
-
+    type -P "$1" &>/dev/null
 }
 
 # Ask for the administrator password upfront.

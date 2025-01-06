@@ -19,57 +19,73 @@ read -p "$(tput bold)$(tput setaf 003)[?] $(tput sgr0)$(tput bold)This installat
 printf "\e[mR\n";
 
 if [[ "$REPLY" =~ ^[Yy]$ ]]; then
-    START_TIME=$SECONDS
-    echo "";
+  START_TIME=$SECONDS
+  echo "";
 else
-    printf "Aborting...\n";
-    exit 1;
+  printf "Aborting...\n";
+  exit 1;
 fi
 
 # Test for known flags
 for opt in $@
 do
-    case ${opt} in
-        --up) update=true ;;
-        -*|--*) printf "$(tput setaf 003) Warning: invalid option $opt" ;;
-    esac
+  case ${opt} in
+    --up) update=true ;;
+    -*|--*) printf "$(tput setaf 003) Warning: invalid option $opt" ;;
+  esac
 done
 
 download_dotfiles() {
-    printf "$(tput setaf 007) Downloading dotfiles...\033[m\n";
-    mkdir ${DOTFILES_INSTALL_DIRECTORY};
-    curl -fsSLo ${DOTFILES_INSTALL_DIRECTORY}/dotfiles.tar.gz ${DOTFILES_TARBALL_PURL};
+  printf "$(tput setaf 007) Downloading dotfiles...\033[m\n";
+  mkdir ${DOTFILES_INSTALL_DIRECTORY};
+  curl -fsSLo ${DOTFILES_INSTALL_DIRECTORY}/dotfiles.tar.gz ${DOTFILES_TARBALL_PURL};
 
-    printf "$(tput setaf 007) Extract dotfiles...\033[m\n";
-    tar -zxf ${DOTFILES_INSTALL_DIRECTORY}/dotfiles.tar.gz --strip-components 1 -C ${DOTFILES_INSTALL_DIRECTORY};
+  printf "$(tput setaf 007) Extract dotfiles...\033[m\n";
+  tar -zxf ${DOTFILES_INSTALL_DIRECTORY}/dotfiles.tar.gz --strip-components 1 -C ${DOTFILES_INSTALL_DIRECTORY};
 
-    printf "$(tput setaf 002) [✔] Download complete. \n";
+  printf "$(tput setaf 002) [✔] Download complete. \n";
 }
 
 copy_dotfiles() {
-    printf "$(tput setaf 007) Copy dotfiles into .dotfiles directory...\033[m\n";
-    rsync --exclude ".git/" \
-          --exclude ".DS_Store" \
-          --exclude "README.md" \
-          --exclude ".gitignore" \
-          --exclude ".idea/" \
-          --exclude "init.sh" \
-          --exclude "install.sh" \
-          --exclude "utils.sh" \
-          -a "${DOTFILES_INSTALL_DIRECTORY}/shell/" "${DOTFILES_DIRECTORY}" \
-          -a "${DOTFILES_INSTALL_DIRECTORY}/themes/" "${DOTFILES_DIRECTORY}";
+  printf "$(tput setaf 007) Copy dotfiles into .dotfiles directory...\033[m\n";
+  rsync --exclude ".git/" \
+    --exclude ".DS_Store" \
+    --exclude "README.md" \
+    --exclude ".gitignore" \
+    --exclude ".idea/" \
+    --exclude "init.sh" \
+    --exclude "install.sh" \
+    --exclude "utils.sh" \
+    -a "${DOTFILES_INSTALL_DIRECTORY}/shell/" "${DOTFILES_DIRECTORY}" \
+    -a "${DOTFILES_INSTALL_DIRECTORY}/themes/" "${DOTFILES_DIRECTORY}";
+}
+
+configure_omz() {
+  printf "$(tput setaf 007) Configure oh-my-zsh ...\033[m\n";
+
+  # 1 copy imalov.zsh-theme from "${DOTFILES_DIRECTORY}"/themes to .oh-my-zsh/custom/themes
+  # 2 link ${DOTFILES_DIRECTORY} ".zshrc" ".zshrc";
 }
 
 remove_install_directory() {
-    printf "$(tput setaf 007) Remove dotfiles install directory...\033[m\n";
-    rm -rf ${DOTFILES_INSTALL_DIRECTORY};
-    printf "$(tput setaf 002) [✔] dotfiles install directory removed. \033[m\n";
+  printf "$(tput setaf 007) Remove dotfiles install directory...\033[m\n";
+  rm -rf ${DOTFILES_INSTALL_DIRECTORY};
+  printf "$(tput setaf 002) [✔] dotfiles install directory removed. \033[m\n";
+}
+
+install_fonts() {
+  printf "$(tput setaf 007) Install fonts ...\033[m\n";
+  brew install --cask font-fira-code
+  brew install --cask font-ibm-plex-mono
+  brew install --cask font-ibm-plex-serif
+  brew install --cask font-ibm-plex-sans
 }
 
 # If missing, make dir, download and extract the dotfiles repository
 if [[ ! -d ${DOTFILES_DIRECTORY} ]]; then
     mkdir ${DOTFILES_DIRECTORY};
 fi
+
 download_dotfiles
 #if [[ ! -d ${DOTFILES_DIRECTORY} ]]; then
 #    mkdir ${DOTFILES_DIRECTORY};
@@ -90,27 +106,32 @@ source ./utils.sh;
 # Ask before potentially overwriting files
 ask_question "Warning: This step may overwrite your existing dotfiles."
 if is_confirmed; then
-    copy_dotfiles
-    link ${DOTFILES_DIRECTORY} ".gitconfig" ".gitconfig";
-    link ${DOTFILES_DIRECTORY} ".bash_profile" ".bash_profile";
-    link ${DOTFILES_DIRECTORY} ".aliases"  ".aliases";
-    success_message "Dotfiles update complete!";
+  copy_dotfiles
+  link ${DOTFILES_DIRECTORY} ".gitconfig" ".gitconfig";
+  link ${DOTFILES_DIRECTORY} ".bash_profile" ".bash_profile";
+  link ${DOTFILES_DIRECTORY} ".convco" ".convco";
+  link ${DOTFILES_DIRECTORY} ".aliases"  ".aliases";
+  success_message "Dotfiles update complete!";
     source ${HOME}/.bash_profile
 else
-    printf "Aborting...\n"
-    exit 1
+  printf "Aborting...\n"
+  exit 1
 fi
 
 source ./init.sh;
 
+configure_omz
+
 # Ask before potentially overwriting OS X defaults
 ask_question "Warning: This step may modify your OS X system defaults.";
 if is_confirmed; then
-    sh ./macos.sh
-    success_message "OS X settings updated! You may need to restart.";
+  sh ./macos.sh
+  success_message "OS X settings updated! You may need to restart.";
 else
-    printf "Skipped OS X settings update.\n"
+  printf "Skipped OS X settings update.\n"
 fi
+
+install_fonts
 
 remove_install_directory
 

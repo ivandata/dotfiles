@@ -7,8 +7,6 @@ elif infocmp xterm-256color >/dev/null 2>&1; then
     export TERM=xterm-256color
 fi
 
-[ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"
-
 source $HOME/.dotfiles/.exports # Exports
 source $HOME/.dotfiles/.aliases # Aliases
 

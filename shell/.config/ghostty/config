@@ -1,0 +1,20 @@
+font-family = IBM Plex Mono
+font-family-bold = IBM Plex Mono Bold
+font-family-italic = IBM Plex Mono Medium Italic
+font-family-bold-italic = IBM Plex Mono Bold Italic
+
+font-size = 12
+theme = ayu
+window-decoration = true
+gtk-adwaita = false
+macos-titlebar-proxy-icon = hidden
+
+macos-option-as-alt = right
+macos-titlebar-style = hidden
+macos-icon = "custom-style"
+macos-icon-frame = "aluminum"
+macos-icon-ghost-color = "86e1fc"
+macos-icon-screen-color = "222436"
+mouse-hide-while-typing = true
+
+shell-integration = zsh
