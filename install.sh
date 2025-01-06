@@ -62,6 +62,18 @@ copy_dotfiles() {
   success_message "Dotfiles copied to ${DOTFILES_DIRECTORY}."
 }
 
+
+# Function to execute init.sh
+run_init_script() {
+  header_message "Running init.sh..."
+  if [ -f "${DOTFILES_DIRECTORY}/init.sh" ]; then
+    bash "${DOTFILES_DIRECTORY}/init.sh" || handle_error "init.sh encountered an error."
+    success_message "init.sh executed successfully."
+  else
+    warning_message "init.sh not found. Skipping initialization."
+  fi
+}
+
 # Function to remove temporary directory
 remove_install_directory() {
   header_message "Removing temporary installation directory..."
@@ -82,12 +94,12 @@ main() {
 
   download_dotfiles
   copy_dotfiles
+  run_init_script
 
   # Example of symlinks
   link "${DOTFILES_DIRECTORY}" ".gitconfig" ".gitconfig"
   link "${DOTFILES_DIRECTORY}" ".bash_profile" ".bash_profile"
   link "${DOTFILES_DIRECTORY}" ".zshrc" ".zshrc"
-  link "${DOTFILES_DIRECTORY}" ".convco" ".convco"
 
   remove_install_directory
   success_message "Dotfiles installation complete!"
