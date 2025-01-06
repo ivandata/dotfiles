@@ -62,3 +62,12 @@ load '../utils.sh'
     run is_confirmed
     [[ "$status" -ne 0 ]]
 }
+
+@test "handle_error exits with error message" {
+    # Create a mock handle_error function
+    source ./utils.sh
+
+    run handle_error "Test error message"
+    [[ "$output" =~ "✖ Test error message" ]]
+    [[ "$status" -ne 0 ]]
+}

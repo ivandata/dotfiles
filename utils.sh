@@ -81,3 +81,9 @@ ask_for_sudo() {
         kill -0 "$$" || exit
     done &>/dev/null &
 }
+
+# Error handler
+handle_error() {
+    error_message "$1"
+    exit 1
+}

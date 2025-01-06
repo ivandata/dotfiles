@@ -1,53 +1,54 @@
 #!/usr/bin/env bash
 
+# Constants
 declare -r GITHUB_REPOSITORY="ivandata/dotfiles"
-
-declare -r DOTFILES_DIRECTORY="${HOME}/.dotfiles";
-declare -r DOTFILES_INSTALL_DIRECTORY="${HOME}/.dotfiles/temp";
-declare -r DOTFILES_TARBALL_PURL="https://github.com/$GITHUB_REPOSITORY/tarball/master";
+declare -r DOTFILES_DIRECTORY="${HOME}/.dotfiles"
+declare -r DOTFILES_INSTALL_DIRECTORY="${DOTFILES_DIRECTORY}/.dotfiles"
+declare -r DOTFILES_TARBALL_URL="https://github.com/$GITHUB_REPOSITORY/tarball/master"
 declare -r DOTFILES_ORIGIN="git@github.com:$GITHUB_REPOSITORY.git"
 
+# Include utilities
+source ./utils.sh
+
+# Print header
 cat <<EOT
 OS X dotfiles - Ivan Malov - https://github.com/ivandata
-Documentation can be found at https://github.com/ivandata/dotfiles
-Copyright (c) Ivan Malov
+Documentation: https://github.com/ivandata/dotfiles
 Licensed under the MIT license.
 EOT
 
-echo "";
-read -p "$(tput bold)$(tput setaf 003)[?] $(tput sgr0)$(tput bold)This installation may overwrite existing files in your home directory. $(tput bold)$(tput setaf 003)Are you sure? (y/n) " -n 1;
-printf "\e[mR\n";
-
-if [[ "$REPLY" =~ ^[Yy]$ ]]; then
-  START_TIME=$SECONDS
-  echo "";
-else
-  printf "Aborting...\n";
-  exit 1;
+# Confirm before proceeding
+ask_question "This installation may overwrite existing files in your home directory. Are you sure?"
+if ! is_confirmed; then
+  error_message "Installation aborted."
+  exit 1
 fi
 
-# Test for known flags
-for opt in $@
-do
+# Dry-run option
+dry_run=false
+for opt in "$@"; do
   case ${opt} in
+    --dry-run) dry_run=true ;;
     --up) update=true ;;
-    -*|--*) printf "$(tput setaf 003) Warning: invalid option $opt" ;;
+    -*|--*) warning_message "Warning: invalid option $opt" ;;
   esac
 done
 
+# Function to download dotfiles
 download_dotfiles() {
-  printf "$(tput setaf 007) Downloading dotfiles...\033[m\n";
-  mkdir ${DOTFILES_INSTALL_DIRECTORY};
-  curl -fsSLo ${DOTFILES_INSTALL_DIRECTORY}/dotfiles.tar.gz ${DOTFILES_TARBALL_PURL};
+  header_message "Downloading dotfiles..."
+  mkdir -p "${DOTFILES_INSTALL_DIRECTORY}"
+  curl -fsSL "${DOTFILES_TARBALL_URL}" -o "${DOTFILES_INSTALL_DIRECTORY}/dotfiles.tar.gz" || handle_error "Failed to download dotfiles."
 
-  printf "$(tput setaf 007) Extract dotfiles...\033[m\n";
-  tar -zxf ${DOTFILES_INSTALL_DIRECTORY}/dotfiles.tar.gz --strip-components 1 -C ${DOTFILES_INSTALL_DIRECTORY};
+  header_message "Extracting dotfiles..."
+  tar -zxf "${DOTFILES_INSTALL_DIRECTORY}/dotfiles.tar.gz" --strip-components 1 -C "${DOTFILES_INSTALL_DIRECTORY}" || handle_error "Failed to extract dotfiles."
 
-  printf "$(tput setaf 002) [✔] Download complete. \n";
+  success_message "Dotfiles downloaded and extracted."
 }
 
+# Function to copy dotfiles
 copy_dotfiles() {
-  printf "$(tput setaf 007) Copy dotfiles into .dotfiles directory...\033[m\n";
+  header_message "Copying dotfiles..."
   rsync --exclude ".git/" \
     --exclude ".DS_Store" \
     --exclude "README.md" \
@@ -57,86 +58,39 @@ copy_dotfiles() {
     --exclude "install.sh" \
     --exclude "utils.sh" \
     -a "${DOTFILES_INSTALL_DIRECTORY}/shell/" "${DOTFILES_DIRECTORY}" \
-    -a "${DOTFILES_INSTALL_DIRECTORY}/themes/" "${DOTFILES_DIRECTORY}";
+    -a "${DOTFILES_INSTALL_DIRECTORY}/themes/" "${DOTFILES_DIRECTORY}" || handle_error "Failed to copy dotfiles."
+  success_message "Dotfiles copied to ${DOTFILES_DIRECTORY}."
 }
 
-configure_omz() {
-  printf "$(tput setaf 007) Configure oh-my-zsh ...\033[m\n";
-
-  # 1 copy imalov.zsh-theme from "${DOTFILES_DIRECTORY}"/themes to .oh-my-zsh/custom/themes
-  # 2 link ${DOTFILES_DIRECTORY} ".zshrc" ".zshrc";
-}
-
+# Function to remove temporary directory
 remove_install_directory() {
-  printf "$(tput setaf 007) Remove dotfiles install directory...\033[m\n";
-  rm -rf ${DOTFILES_INSTALL_DIRECTORY};
-  printf "$(tput setaf 002) [✔] dotfiles install directory removed. \033[m\n";
+  header_message "Removing temporary installation directory..."
+  rm -rf "${DOTFILES_INSTALL_DIRECTORY}" || warning_message "Failed to remove installation directory."
+  success_message "Temporary directory removed."
 }
 
-install_fonts() {
-  printf "$(tput setaf 007) Install fonts ...\033[m\n";
-  brew install --cask font-fira-code
-  brew install --cask font-ibm-plex-mono
-  brew install --cask font-ibm-plex-serif
-  brew install --cask font-ibm-plex-sans
-}
+# Main installation logic
+main() {
+  if [[ $dry_run == true ]]; then
+    warning_message "Dry run enabled. No changes will be made."
+    return
+  fi
 
-# If missing, make dir, download and extract the dotfiles repository
-if [[ ! -d ${DOTFILES_DIRECTORY} ]]; then
-    mkdir ${DOTFILES_DIRECTORY};
-fi
+  if [[ ! -d ${DOTFILES_DIRECTORY} ]]; then
+    mkdir -p "${DOTFILES_DIRECTORY}" || handle_error "Failed to create dotfiles directory."
+  fi
 
-download_dotfiles
-#if [[ ! -d ${DOTFILES_DIRECTORY} ]]; then
-#    mkdir ${DOTFILES_DIRECTORY};
-#    download_dotfiles
-#elif [[ ${update} ]]; then
-#    download_dotfiles
-#else
-#    printf "$(tput setaf 003) dotfiles already installed. If you need update dotfiles, please run installation with --up flag.";
-#    printf "\e[mR\n";
-#    remove_install_directory
-#    exit 1;
-#fi
-
-cd ${DOTFILES_INSTALL_DIRECTORY};
-
-source ./utils.sh;
-
-# Ask before potentially overwriting files
-ask_question "Warning: This step may overwrite your existing dotfiles."
-if is_confirmed; then
+  download_dotfiles
   copy_dotfiles
-  link ${DOTFILES_DIRECTORY} ".gitconfig" ".gitconfig";
-  link ${DOTFILES_DIRECTORY} ".bash_profile" ".bash_profile";
-  link ${DOTFILES_DIRECTORY} ".convco" ".convco";
-  link ${DOTFILES_DIRECTORY} ".aliases"  ".aliases";
-  success_message "Dotfiles update complete!";
-    source ${HOME}/.bash_profile
-else
-  printf "Aborting...\n"
-  exit 1
-fi
 
-source ./init.sh;
+  # Example of symlinks
+  link "${DOTFILES_DIRECTORY}" ".gitconfig" ".gitconfig"
+  link "${DOTFILES_DIRECTORY}" ".bash_profile" ".bash_profile"
+  link "${DOTFILES_DIRECTORY}" ".zshrc" ".zshrc"
 
-configure_omz
+  remove_install_directory
+  success_message "Dotfiles installation complete!"
+}
 
-# Ask before potentially overwriting OS X defaults
-ask_question "Warning: This step may modify your OS X system defaults.";
-if is_confirmed; then
-  sh ./macos.sh
-  success_message "OS X settings updated! You may need to restart.";
-else
-  printf "Skipped OS X settings update.\n"
-fi
-
-install_fonts
-
-remove_install_directory
-
-ELAPSED_TIME=$((${SECONDS} - ${START_TIME}))
-ELAPSED_MIN=$((${ELAPSED_TIME}/60))
-ELAPSED_SEC=$((${ELAPSED_TIME}%60))
-
-echo "\n✨  All done in ${ELAPSED_MIN} min ${ELAPSED_SEC} sec.\n"
+# Run the script
+main
