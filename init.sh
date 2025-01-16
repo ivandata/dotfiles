@@ -47,6 +47,10 @@ install_git() {
   ensure_installed "git" "brew install git"
 }
 
+install_pyenv() {
+  ensure_installed "pyenv" "brew install pyenv"
+}
+
 # Ensure oh-my-zsh is installed
 install_oh_my_zsh() {
   header_message "Checking omz..."
@@ -112,6 +116,7 @@ main() {
   install_ghostty
   install_convco
   install_fnm
+  install_pyenv
   apply_macos_settings
 }
 

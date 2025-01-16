@@ -81,6 +81,29 @@ remove_install_directory() {
   success_message "Temporary directory removed."
 }
 
+link_ghostty_config() {
+  header_message "Linking .ghostty configuration..."
+
+  # Define source and destination paths
+  local source="${DOTFILES_DIRECTORY}/.ghostty"
+  local destination="${HOME}/.config/ghostty/config"
+
+  # Check if the source file exists
+  if [ -f "$source" ]; then
+    # Ensure destination directory exists
+    mkdir -p "$(dirname "$destination")" || handle_error "Failed to create ghostty directory."
+
+    # Create a symlink
+    ln -sf "$source" "$destination" || handle_error "Failed to link .ghostty configuration."
+    success_message "Linked .ghostty to $destination."
+  else
+    # If source file does not exist, create directory and empty file
+    mkdir -p "$(dirname "$destination")" || handle_error "Failed to create ghostty directory."
+    touch "$destination" || handle_error "Failed to create ghostty config file."
+    warning_message "No .ghostty file found in $DOTFILES_DIRECTORY. Created an empty config file at $destination."
+  fi
+}
+
 # Main installation logic
 main() {
   if [[ $dry_run == true ]]; then
@@ -100,6 +123,8 @@ main() {
   link "${DOTFILES_DIRECTORY}" ".gitconfig" ".gitconfig"
   link "${DOTFILES_DIRECTORY}" ".bash_profile" ".bash_profile"
   link "${DOTFILES_DIRECTORY}" ".zshrc" ".zshrc"
+
+  link_ghostty_config
 
   remove_install_directory
   success_message "Dotfiles installation complete!"

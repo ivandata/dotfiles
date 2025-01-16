@@ -14,8 +14,8 @@ teardown() {
 }
 
 # Load utilities and script
-load ./utils.sh
-source ./install.sh
+load ../utils.sh
+source ../install.sh
 
 # Test download_dotfiles
 @test "download_dotfiles downloads and extracts dotfiles to the temporary directory" {
