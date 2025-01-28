@@ -15,8 +15,8 @@ defaults write com.apple.finder ShowStatusBar -bool true # Show status bar in Fi
 defaults write com.apple.finder FXPreferredViewStyle -string "Nlsv" # Use list view in Finder by default
 
 # Dock
-defaults write com.apple.dock autohide -bool true # Auto-hide Dock
-defaults write com.apple.dock tilesize -int 36 # Set Dock tile size
+defaults write com.apple.dock autohide -bool false # Auto-hide Dock
+defaults write com.apple.dock tilesize -int 50 # Set Dock tile size
 
 # Screenshots
 defaults write com.apple.screencapture location -string "${HOME}/Pictures/Screenshots" # Save screenshots to ~/Pictures/Screenshots
