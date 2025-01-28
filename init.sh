@@ -90,6 +90,11 @@ apply_macos_settings() {
   fi
 }
 
+install_fonts() {
+  header_message "Installing fonts..."
+  brew install font-fira-code font-ibm-plex-mono
+}
+
 # Main setup steps
 main() {
   install_xcode_cli_tools
@@ -101,6 +106,7 @@ main() {
   install_fnm
   install_pyenv
   apply_macos_settings
+  install_fonts
 }
 
 main
