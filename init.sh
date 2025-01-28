@@ -80,22 +80,6 @@ install_fnm() {
   ensure_installed "fnm" "curl -fsSL https://fnm.vercel.app/install | bash"
 }
 
-# Ensure browsers are installed
-install_browsers() {
-  header_message "Checking browsers..."
-  local browsers=("google-chrome" "firefox" "opera")
-  for browser in "${browsers[@]}"; do
-    if brew list --cask "$browser" &>/dev/null; then
-      success_message "$browser is already installed."
-    else
-      warning_message "$browser not found. Installing..."
-      brew install --cask "$browser" || handle_error "Failed to install $browser."
-      success_message "$browser installed."
-    fi
-  done
-}
-
-
 # Apply macOS-specific settings
 apply_macos_settings() {
   header_message "Applying macOS system preferences..."
