@@ -7,8 +7,11 @@ declare -r DOTFILES_INSTALL_DIRECTORY="${DOTFILES_DIRECTORY}/.dotfiles"
 declare -r DOTFILES_TARBALL_URL="https://github.com/$GITHUB_REPOSITORY/tarball/master"
 declare -r DOTFILES_ORIGIN="git@github.com:$GITHUB_REPOSITORY.git"
 
-# Include utilities
-source ./utils.sh
+# Determine the directory of the currently executing script
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+# Source utils.sh from the same directory as install.sh
+source "$SCRIPT_DIR/utils.sh"
 
 # Print header
 cat <<EOT
