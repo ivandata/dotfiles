@@ -96,7 +96,6 @@ main() {
   install_homebrew
   install_git
   install_oh_my_zsh
-  install_browsers
   install_ghostty
   install_convco
   install_fnm

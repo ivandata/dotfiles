@@ -19,8 +19,8 @@ defaults write com.apple.dock autohide -bool true # Auto-hide Dock
 defaults write com.apple.dock tilesize -int 36 # Set Dock tile size
 
 # Screenshots
-defaults write com.apple.screencapture location -string "${HOME}/Screenshots" # Save screenshots to ~/Screenshots
-mkdir -p "${HOME}/Screenshots"
+defaults write com.apple.screencapture location -string "${HOME}/Pictures/Screenshots" # Save screenshots to ~/Pictures/Screenshots
+mkdir -p "${HOME}/Pictures/Screenshots"
 
 # Safari
 defaults write com.apple.Safari ShowFullURLInSmartSearchField -bool true # Show full URL in Safari's address bar
