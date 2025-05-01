@@ -20,12 +20,17 @@ header_message "Applying macOS system preferences..."
 # General UI/UX
 defaults write NSGlobalDomain AppleShowScrollBars -string "Always" # Always show scrollbars
 defaults write com.apple.menuextra.battery ShowPercent -string "YES" # Show battery percentage
+defaults write NSGlobalDomain AppleShowAllExtensions -bool true
 
 # Finder
 defaults write com.apple.finder ShowPathbar -bool true # Show path bar in Finder
 defaults write com.apple.finder ShowStatusBar -bool true # Show status bar in Finder
 defaults write com.apple.finder FXPreferredViewStyle -string "Nlsv" # Use list view in Finder by default
+defaults write com.apple.finder FXEnableExtensionChangeWarning -bool false
+defaults write com.apple.finder AppleShowAllFiles -bool true
 
+echo "Finder: display full POSIX path as window title"
+defaults write com.apple.finder _FXShowPosixPathInTitle -bool true
 # Dock
 defaults write com.apple.dock autohide -bool false # Auto-hide Dock
 defaults write com.apple.dock tilesize -int 50 # Set Dock tile size
