@@ -87,6 +87,36 @@ install_ghostty() {
   ensure_installed "ghostty" "brew install --cask ghostty"
 }
 
+
+# Ensure Convco is installed
+install_convco() {
+  ensure_installed "convco" "brew install convco"
+}
+
+# Ensure Fast Node Manager (fnm) is installed
+install_fnm() {
+  ensure_installed "fnm" "curl -fsSL https://fnm.vercel.app/install | bash"
+}
+
+# Apply macOS-specific settings
+apply_macos_settings() {
+  header_message "Applying macOS system preferences..."
+  if [ -f ./macos.sh ]; then
+    bash ./macos.sh || handle_error "Failed to apply macOS system preferences."
+  else
+    warning_message "macos.sh not found. Skipping macOS settings."
+  fi
+}
+
+install_fonts() {
+  header_message "Installing fonts..."
+  brew install font-fira-code font-ibm-plex-mono
+}
+
+install_pyenv() {
+  ensure_installed "pyenv" "brew install pyenv"
+}
+
 main() {
   install_xcode_cli_tools
   install_homebrew
