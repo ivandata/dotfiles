@@ -57,11 +57,12 @@ install_oh_my_zsh() {
   if [ -d "$HOME/.oh-my-zsh" ]; then
     success_message "Oh My Zsh is already installed."
   else
-    warning_message "Oh My Zsh not found. Installing..."
-    # Prevent the installer from changing your shell or launching zsh
-    RUNZSH=no CHSH=no sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended \
-      || handle_error "Failed to install Oh My Zsh."
-    success_message "Oh My Zsh installed!"
+    warning_message "Oh My Zsh not found. Installing (manual clone)…"
+    git clone https://github.com/ohmyzsh/ohmyzsh.git "$HOME/.oh-my-zsh" \
+      || handle_error "Failed to clone Oh My Zsh."
+    cp -n "$HOME/.oh-my-zsh/templates/zshrc.zsh-template" "$HOME/.zshrc" \
+      || warning_message "~/.zshrc exists; skipping template copy."
+    success_message "Oh My Zsh installed (no shell exec)."
   fi
 }
 
