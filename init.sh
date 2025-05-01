@@ -63,6 +63,12 @@ install_oh_my_zsh() {
     cp -n "$HOME/.oh-my-zsh/templates/zshrc.zsh-template" "$HOME/.zshrc" \
       || warning_message "~/.zshrc exists; skipping template copy."
     success_message "Oh My Zsh installed (no shell exec)."
+
+    if command -v brew >/dev/null; then
+      echo "🌱 Loading Homebrew into this shell…"
+      eval "$($(brew --prefix)/bin/brew shellenv)"
+      hash -r   # clear the command-lookup cache
+    fi
   fi
 }
 
