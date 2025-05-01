@@ -53,15 +53,15 @@ install_pyenv() {
 
 # Ensure oh-my-zsh is installed
 install_oh_my_zsh() {
-  header_message "Checking omz..."
+  header_message "Checking Oh My Zsh..."
   if [ -d "$HOME/.oh-my-zsh" ]; then
-    success_message "omz is already installed."
+    success_message "Oh My Zsh is already installed."
   else
-    warning_message "omz not found. Installing..."
-    if ! sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --skip-chsh --keep-zshrc; then
-      handle_error "Failed to install omz."
-    fi
-    success_message "omz installed!"
+    warning_message "Oh My Zsh not found. Installing..."
+    # Prevent the installer from changing your shell or launching zsh
+    RUNZSH=no CHSH=no sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended \
+      || handle_error "Failed to install Oh My Zsh."
+    success_message "Oh My Zsh installed!"
   fi
 }
 
