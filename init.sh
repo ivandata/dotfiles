@@ -3,11 +3,20 @@ set -euo pipefail
 
 source ./utils.sh
 
-# Function to load Homebrew environment
+# Function to load Homebrew environment from known locations
 load_brew_env() {
+  local brew_path=""
   if command -v brew &>/dev/null; then
+    brew_path="$(command -v brew)"
+  elif [ -x "/opt/homebrew/bin/brew" ]; then
+    brew_path="/opt/homebrew/bin/brew"
+  elif [ -x "/usr/local/bin/brew" ]; then
+    brew_path="/usr/local/bin/brew"
+  fi
+
+  if [ -n "$brew_path" ]; then
     echo "🌱 Loading Homebrew into this shell…"
-    eval "$("${HOMEBREW_PREFIX:-/opt/homebrew}"/bin/brew shellenv)"
+    eval "$($brew_path shellenv)"
     hash -r
   else
     echo "⚠️ Homebrew not found; skipping environment load"
