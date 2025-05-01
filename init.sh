@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-source /utils.sh
+source ./utils.sh
 
 # Immediately load Homebrew env if installed
 # (will run only if brew already exists from a previous run)
