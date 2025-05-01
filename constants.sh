@@ -5,22 +5,23 @@
 # --------------------------------------------
 
 # GitHub repository info
-declare -r GITHUB_REPOSITORY="ivandata/dotfiles"
-declare -r DOTFILES_TARBALL_URL="https://github.com/$GITHUB_REPOSITORY/tarball/master"
-declare -r DOTFILES_ORIGIN="git@github.com:$GITHUB_REPOSITORY.git"
+GITHUB_REPOSITORY="${GITHUB_REPOSITORY:-ivandata/dotfiles}"
+DOTFILES_TARBALL_URL="${DOTFILES_TARBALL_URL:-https://github.com/$GITHUB_REPOSITORY/tarball/master}"
+DOTFILES_ORIGIN="${DOTFILES_ORIGIN:-git@github.com:$GITHUB_REPOSITORY.git}"
 
 # Directory structure
-declare -r DOTFILES_DIRECTORY="${HOME}/.dotfiles"
-declare -r DOTFILES_INSTALL_DIRECTORY="${DOTFILES_DIRECTORY}/.dotfiles"
+# Using standard variables instead of readonly to avoid issues when sourced in different contexts
+DOTFILES_DIRECTORY="${DOTFILES_DIRECTORY:-${HOME}/.dotfiles}"
+DOTFILES_INSTALL_DIRECTORY="${DOTFILES_INSTALL_DIRECTORY:-${DOTFILES_DIRECTORY}/.dotfiles}"
 
 # Script names
-declare -r UTILS_SCRIPT="utils.sh"
-declare -r MACOS_SCRIPT="macos.sh"
-declare -r INIT_SCRIPT="init.sh"
-declare -r CONSTANTS_SCRIPT="constants.sh"
+UTILS_SCRIPT="${UTILS_SCRIPT:-utils.sh}"
+MACOS_SCRIPT="${MACOS_SCRIPT:-macos.sh}"
+INIT_SCRIPT="${INIT_SCRIPT:-init.sh}"
+CONSTANTS_SCRIPT="${CONSTANTS_SCRIPT:-constants.sh}"
 
 # Remote URLs
-declare -r UTILS_REMOTE_URL="https://raw.githubusercontent.com/${GITHUB_REPOSITORY}/master/utils.sh"
+UTILS_REMOTE_URL="${UTILS_REMOTE_URL:-https://raw.githubusercontent.com/${GITHUB_REPOSITORY}/master/utils.sh}"
 
 # Export for subshells
 export GITHUB_REPOSITORY

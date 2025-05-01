@@ -98,13 +98,11 @@ copy_dotfiles() {
   success_message "Dotfiles (incl. scripts) copied to ${DOTFILES_DIRECTORY}."
 }
 
-# Function to execute init.sh
+  # Function to execute init.sh
 run_init_script() {
   header_message "Running init.sh..."
   if [ -f "${DOTFILES_DIRECTORY}/${INIT_SCRIPT}" ]; then
-    # Pass the directories as environment variables
-    DOTFILES_DIRECTORY="${DOTFILES_DIRECTORY}" \
-    DOTFILES_INSTALL_DIRECTORY="${DOTFILES_INSTALL_DIRECTORY}" \
+    # Execute the script directly (with constants already sourced)
     bash "${DOTFILES_DIRECTORY}/${INIT_SCRIPT}" || handle_error "init.sh encountered an error."
     success_message "init.sh executed successfully."
   else
