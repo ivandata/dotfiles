@@ -3,13 +3,16 @@ set -euo pipefail
 
 source ./utils.sh
 
-# Immediately load Homebrew env if installed
-# (will run only if brew already exists from a previous run)
-if command -v brew &>/dev/null; then
-  echo "🌱 Loading Homebrew into this shell…"
-  eval "$(brew --prefix)/bin/brew shellenv"
-  hash -r
-fi
+# Function to load Homebrew environment
+load_brew_env() {
+  if command -v brew &>/dev/null; then
+    echo "🌱 Loading Homebrew into this shell…"
+    eval "$("${HOMEBREW_PREFIX:-/opt/homebrew}"/bin/brew shellenv)"
+    hash -r
+  else
+    echo "⚠️ Homebrew not found; skipping environment load"
+  fi
+}
 
 # Helper to install a tool if missing
 ensure_installed() {
@@ -45,10 +48,9 @@ install_homebrew() {
   else
     success_message "Homebrew already installed"
   fi
-  echo "🌱 Loading Homebrew into this shell…"
-  eval "$( $(brew --prefix)/bin/brew shellenv )"
-  hash -r
+  load_brew_env
 }
+
 
 install_git() {
   ensure_installed "git" "brew install git"
@@ -70,11 +72,8 @@ install_oh_my_zsh() {
 
 install_ghostty() {
   header_message "Ghostty…"
-  # Reload Homebrew env in case overwritten
-  if command -v brew &>/dev/null; then
-    eval "$( $(brew --prefix)/bin/brew shellenv )"
-    hash -r
-  fi
+
+  load_brew_env
 
   ensure_installed "ghostty" "brew install --cask ghostty"
 }
@@ -85,7 +84,11 @@ main() {
   install_git
   install_oh_my_zsh
   install_ghostty
-  # ... any other installers ...
+  install_convco
+  install_fnm
+  install_pyenv
+  apply_macos_settings
+  install_fonts
 }
 
 main
