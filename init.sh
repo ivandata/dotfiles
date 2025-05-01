@@ -1,10 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# Determine script directory
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-# Load utilities
-source "${SCRIPT_DIR}/utils.sh"
+source /utils.sh
 
 # Immediately load Homebrew env if installed
 # (will run only if brew already exists from a previous run)
