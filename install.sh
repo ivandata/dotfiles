@@ -138,12 +138,13 @@ main() {
 
   download_dotfiles
   copy_dotfiles
-  run_init_script
+
 
   # Create standard symlinks
   link "${DOTFILES_DIRECTORY}" ".gitconfig"    ".gitconfig"
   link "${DOTFILES_DIRECTORY}" ".bash_profile" ".bash_profile"
   link "${DOTFILES_DIRECTORY}" ".zshrc"        ".zshrc"
+  run_init_script
 
   link_ghostty_config
   remove_install_directory
