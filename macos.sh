@@ -34,9 +34,6 @@ defaults write com.apple.dock tilesize -int 50 # Set Dock tile size
 defaults write com.apple.screencapture location -string "${HOME}/Pictures/Screenshots" # Save screenshots to ~/Pictures/Screenshots
 mkdir -p "${HOME}/Pictures/Screenshots"
 
-# Safari
-defaults write com.apple.Safari ShowFullURLInSmartSearchField -bool true # Show full URL in Safari's address bar
-
 # Restart services to apply changes
 killall Finder
 killall Dock
