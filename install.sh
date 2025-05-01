@@ -1,22 +1,33 @@
 #!/usr/bin/env bash
 
+## ─── BOOTSTRAP utils.sh ────────────────────────────────────────────────────
+# If someone pipes this script in, we won’t have a real SCRIPT_DIR/utils.sh,
+# so grab utils.sh into a temp folder and point SCRIPT_DIR there.
+declare BOOTSTRAP_DIR=""
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+if [ ! -f "${SCRIPT_DIR}/utils.sh" ]; then
+  BOOTSTRAP_DIR="$(mktemp -d)"
+  echo "[➜] Bootstrapping utils.sh into ${BOOTSTRAP_DIR}"
+  curl -fsSL \
+    "https://raw.githubusercontent.com/${GITHUB_REPOSITORY:-ivandata/dotfiles}/master/utils.sh" \
+    -o "${BOOTSTRAP_DIR}/utils.sh" \
+    || { echo "Failed to download utils.sh"; exit 1; }
+  # Point SCRIPT_DIR at our temp so `source` works
+  SCRIPT_DIR="${BOOTSTRAP_DIR}"
+  # Ensure cleanup on exit
+  trap 'rm -rf "${BOOTSTRAP_DIR}"' EXIT
+fi
+
+# Now we can safely source all helpers
+source "${SCRIPT_DIR}/utils.sh"
+## ─── end BOOTSTRAP ────────────────────────────────────────────────────────
+
 # Constants
 declare -r GITHUB_REPOSITORY="ivandata/dotfiles"
 declare -r DOTFILES_DIRECTORY="${HOME}/.dotfiles"
 declare -r DOTFILES_INSTALL_DIRECTORY="${DOTFILES_DIRECTORY}/.dotfiles"
 declare -r DOTFILES_TARBALL_URL="https://github.com/$GITHUB_REPOSITORY/tarball/master"
 declare -r DOTFILES_ORIGIN="git@github.com:$GITHUB_REPOSITORY.git"
-
-# Determine the directory of the currently executing script
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-
-# Bootstrap utils.sh if it’s missing, then source it
-if [ ! -f "$SCRIPT_DIR/utils.sh" ]; then
-  curl -fsSL "https://raw.githubusercontent.com/${GITHUB_REPOSITORY}/master/utils.sh" \
-  -o "$SCRIPT_DIR/utils.sh" \
-  || { echo "Failed to download utils.sh"; exit 1; }
-fi
-source "$SCRIPT_DIR/utils.sh"
 
 # Print header
 cat <<EOT
@@ -32,8 +43,9 @@ if ! is_confirmed; then
   exit 1
 fi
 
-# Dry-run option
+# Dry-run / update options
 dry_run=false
+update=false
 for opt in "$@"; do
   case ${opt} in
     --dry-run) dry_run=true ;;
@@ -46,30 +58,40 @@ done
 download_dotfiles() {
   header_message "Downloading dotfiles..."
   mkdir -p "${DOTFILES_INSTALL_DIRECTORY}"
-  curl -fsSL "${DOTFILES_TARBALL_URL}" -o "${DOTFILES_INSTALL_DIRECTORY}/dotfiles.tar.gz" || handle_error "Failed to download dotfiles."
+  curl -fsSL "${DOTFILES_TARBALL_URL}" -o "${DOTFILES_INSTALL_DIRECTORY}/dotfiles.tar.gz" \
+    || handle_error "Failed to download dotfiles."
 
   header_message "Extracting dotfiles..."
-  tar -zxf "${DOTFILES_INSTALL_DIRECTORY}/dotfiles.tar.gz" --strip-components 1 -C "${DOTFILES_INSTALL_DIRECTORY}" || handle_error "Failed to extract dotfiles."
+  tar -zxf "${DOTFILES_INSTALL_DIRECTORY}/dotfiles.tar.gz" --strip-components 1 \
+    -C "${DOTFILES_INSTALL_DIRECTORY}" \
+    || handle_error "Failed to extract dotfiles."
 
   success_message "Dotfiles downloaded and extracted."
 }
 
-# Function to copy dotfiles
+# Function to copy dotfiles (including init.sh)
 copy_dotfiles() {
-  header_message "Copying dotfiles..."
+  header_message "Copying dotfiles & init.sh..."
+  # 1) copy shell & themes
   rsync --exclude ".git/" \
-    --exclude ".DS_Store" \
-    --exclude "README.md" \
-    --exclude ".gitignore" \
-    --exclude ".idea/" \
-    --exclude "init.sh" \
-    --exclude "install.sh" \
-    --exclude "utils.sh" \
-    -a "${DOTFILES_INSTALL_DIRECTORY}/shell/" "${DOTFILES_DIRECTORY}" \
-    -a "${DOTFILES_INSTALL_DIRECTORY}/themes/" "${DOTFILES_DIRECTORY}" || handle_error "Failed to copy dotfiles."
-  success_message "Dotfiles copied to ${DOTFILES_DIRECTORY}."
-}
+        --exclude ".DS_Store" \
+        --exclude "README.md" \
+        --exclude ".gitignore" \
+        --exclude ".idea/" \
+        --exclude "install.sh" \
+        --exclude "utils.sh" \
+        -a "${DOTFILES_INSTALL_DIRECTORY}/shell/"  "${DOTFILES_DIRECTORY}" \
+        -a "${DOTFILES_INSTALL_DIRECTORY}/themes/" "${DOTFILES_DIRECTORY}" \
+    || handle_error "Failed to rsync shell/themes."
 
+  # 2) explicitly copy init.sh (and make it executable)
+  if [ -f "${DOTFILES_INSTALL_DIRECTORY}/init.sh" ]; then
+    cp "${DOTFILES_INSTALL_DIRECTORY}/init.sh" "${DOTFILES_DIRECTORY}/init.sh"
+    chmod +x "${DOTFILES_DIRECTORY}/init.sh"
+  fi
+
+  success_message "Dotfiles (incl. init.sh) copied to ${DOTFILES_DIRECTORY}."
+}
 
 # Function to execute init.sh
 run_init_script() {
@@ -82,34 +104,33 @@ run_init_script() {
   fi
 }
 
-# Function to remove temporary directory
-remove_install_directory() {
-  header_message "Removing temporary installation directory..."
-  rm -rf "${DOTFILES_INSTALL_DIRECTORY}" || warning_message "Failed to remove installation directory."
-  success_message "Temporary directory removed."
-}
-
+# Link .ghostty config
 link_ghostty_config() {
   header_message "Linking .ghostty configuration..."
-
-  # Define source and destination paths
   local source="${DOTFILES_DIRECTORY}/.ghostty"
   local destination="${HOME}/.config/ghostty/config"
 
-  # Check if the source file exists
   if [ -f "$source" ]; then
-    # Ensure destination directory exists
-    mkdir -p "$(dirname "$destination")" || handle_error "Failed to create ghostty directory."
-
-    # Create a symlink
-    ln -sf "$source" "$destination" || handle_error "Failed to link .ghostty configuration."
+    mkdir -p "$(dirname "$destination")" \
+      || handle_error "Failed to create ghostty directory."
+    ln -sf "$source" "$destination" \
+      || handle_error "Failed to link .ghostty configuration."
     success_message "Linked .ghostty to $destination."
   else
-    # If source file does not exist, create directory and empty file
-    mkdir -p "$(dirname "$destination")" || handle_error "Failed to create ghostty directory."
-    touch "$destination" || handle_error "Failed to create ghostty config file."
-    warning_message "No .ghostty file found in $DOTFILES_DIRECTORY. Created an empty config file at $destination."
+    mkdir -p "$(dirname "$destination")" \
+      || handle_error "Failed to create ghostty directory."
+    touch "$destination" \
+      || handle_error "Failed to create ghostty config file."
+    warning_message "No .ghostty file in ${DOTFILES_DIRECTORY}. Created empty config at $destination."
   fi
+}
+
+# Remove temporary dotfiles install directory
+remove_install_directory() {
+  header_message "Removing temporary installation directory..."
+  rm -rf "${DOTFILES_INSTALL_DIRECTORY}" \
+    || warning_message "Failed to remove installation directory."
+  success_message "Temporary directory removed."
 }
 
 # Main installation logic
@@ -119,24 +140,26 @@ main() {
     return
   fi
 
+  # Ensure dotfiles dir exists
   if [[ ! -d ${DOTFILES_DIRECTORY} ]]; then
-    mkdir -p "${DOTFILES_DIRECTORY}" || handle_error "Failed to create dotfiles directory."
+    mkdir -p "${DOTFILES_DIRECTORY}" \
+      || handle_error "Failed to create dotfiles directory."
   fi
 
   download_dotfiles
   copy_dotfiles
   run_init_script
 
-  # Example of symlinks
-  link "${DOTFILES_DIRECTORY}" ".gitconfig" ".gitconfig"
+  # Create standard symlinks
+  link "${DOTFILES_DIRECTORY}" ".gitconfig"    ".gitconfig"
   link "${DOTFILES_DIRECTORY}" ".bash_profile" ".bash_profile"
-  link "${DOTFILES_DIRECTORY}" ".zshrc" ".zshrc"
+  link "${DOTFILES_DIRECTORY}" ".zshrc"        ".zshrc"
 
   link_ghostty_config
-
   remove_install_directory
+
   success_message "Dotfiles installation complete!"
 }
 
-# Run the script
+# Execute
 main
