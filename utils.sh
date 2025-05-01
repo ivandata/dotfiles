@@ -1,5 +1,13 @@
 #!/usr/bin/env bash
 
+# Load constants if they exist
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+CONSTANTS_SCRIPT="constants.sh"
+
+if [ -f "${SCRIPT_DIR}/${CONSTANTS_SCRIPT}" ]; then
+  source "${SCRIPT_DIR}/${CONSTANTS_SCRIPT}"
+fi
+
 # Print in colors
 print_in_red() {
     printf "\033[31m%s\033[0m" "$1"

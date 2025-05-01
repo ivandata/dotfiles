@@ -1,9 +1,22 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+# Load constants if they exist, otherwise use script directory
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+CONSTANTS_SCRIPT="constants.sh"
 
-source "${SCRIPT_DIR}/utils.sh"
+if [ -f "${SCRIPT_DIR}/${CONSTANTS_SCRIPT}" ]; then
+  source "${SCRIPT_DIR}/${CONSTANTS_SCRIPT}"
+fi
+
+# Access to utils.sh
+UTILS_SCRIPT="utils.sh"
+if [ -f "${SCRIPT_DIR}/${UTILS_SCRIPT}" ]; then
+  source "${SCRIPT_DIR}/${UTILS_SCRIPT}"
+else
+  echo "Error: ${UTILS_SCRIPT} not found! Exiting."
+  exit 1
+fi
 
 # Function to load Homebrew environment from known locations
 load_brew_env() {
@@ -62,7 +75,6 @@ install_homebrew() {
   load_brew_env
 }
 
-
 install_git() {
   ensure_installed "git" "brew install git"
 }
@@ -83,12 +95,9 @@ install_oh_my_zsh() {
 
 install_ghostty() {
   header_message "Ghostty…"
-
   load_brew_env
-
   ensure_installed "ghostty" "brew install --cask ghostty"
 }
-
 
 # Ensure Convco is installed
 install_convco() {
@@ -103,13 +112,14 @@ install_fnm() {
 # Apply macOS-specific settings
 apply_macos_settings() {
   header_message "Applying macOS system preferences…"
-    if [ -f "${SCRIPT_DIR}/macos.sh" ]; then
-      # shellcheck source=/dev/null
-      source "${SCRIPT_DIR}/macos.sh"
-      success_message "macOS settings applied"
-    else
-      warning_message "macos.sh not found. Skipping macOS settings."
-    fi
+  MACOS_SCRIPT="macos.sh"
+  if [ -f "${SCRIPT_DIR}/${MACOS_SCRIPT}" ]; then
+    # Source the script to ensure it has access to utility functions
+    source "${SCRIPT_DIR}/${MACOS_SCRIPT}"
+    success_message "macOS settings applied"
+  else
+    warning_message "${MACOS_SCRIPT} not found. Skipping macOS settings."
+  fi
 }
 
 install_fonts() {

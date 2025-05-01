@@ -1,7 +1,19 @@
 #!/usr/bin/env bash
 
-# Load utilities
-source ./utils.sh
+# Load constants and utilities if not already loaded
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+CONSTANTS_SCRIPT="constants.sh"
+UTILS_SCRIPT="utils.sh"
+
+# Load constants if they exist
+if [ -f "${SCRIPT_DIR}/${CONSTANTS_SCRIPT}" ]; then
+  source "${SCRIPT_DIR}/${CONSTANTS_SCRIPT}"
+fi
+
+# Load utilities if they exist and aren't already loaded
+if [ -f "${SCRIPT_DIR}/${UTILS_SCRIPT}" ] && ! type header_message &>/dev/null; then
+  source "${SCRIPT_DIR}/${UTILS_SCRIPT}"
+fi
 
 header_message "Applying macOS system preferences..."
 
