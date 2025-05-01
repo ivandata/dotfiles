@@ -1,7 +1,16 @@
 #!/usr/bin/env bash
+set -euo pipefail
 
+# Determine script directory\ nSCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 # Load utilities
-source ./utils.sh
+source "${SCRIPT_DIR}/utils.sh"
+
+# Immediately load Homebrew env if installed
+if command -v brew &>/dev/null; then
+  echo "🌱 Loading Homebrew into this shell…"
+  eval "$( $(brew --prefix)/bin/brew shellenv )"
+  hash -r
+fi
 
 # Reusable function to ensure a command is installed
 ensure_installed() {
@@ -72,7 +81,7 @@ install_ghostty() {
     eval "$($(brew --prefix)/bin/brew shellenv)"
     hash -r
   fi
-  
+
   ensure_installed "ghostty" "brew install --cask ghostty"
 }
 
