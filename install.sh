@@ -1,24 +1,14 @@
 #!/usr/bin/env bash
 
 ## ─── BOOTSTRAP utils.sh ────────────────────────────────────────────────────
-# If someone pipes this script in, we won’t have a real SCRIPT_DIR/utils.sh,
-# so grab utils.sh into a temp folder and point SCRIPT_DIR there.
-declare BOOTSTRAP_DIR=""
+# Ensure utils.sh is available so helper functions (header_message, success_message, etc.) exist
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 if [ ! -f "${SCRIPT_DIR}/utils.sh" ]; then
-  BOOTSTRAP_DIR="$(mktemp -d)"
-  echo "[➜] Bootstrapping utils.sh into ${BOOTSTRAP_DIR}"
-  curl -fsSL \
-    "https://raw.githubusercontent.com/${GITHUB_REPOSITORY:-ivandata/dotfiles}/master/utils.sh" \
-    -o "${BOOTSTRAP_DIR}/utils.sh" \
-    || { echo "Failed to download utils.sh"; exit 1; }
-  # Point SCRIPT_DIR at our temp so `source` works
-  SCRIPT_DIR="${BOOTSTRAP_DIR}"
-  # Ensure cleanup on exit
-  trap 'rm -rf "${BOOTSTRAP_DIR}"' EXIT
+  echo "[➜] Downloading helper functions..."
+  curl -fsSL "https://raw.githubusercontent.com/ivandata/dotfiles/master/utils.sh" \
+    -o "${SCRIPT_DIR}/utils.sh" \
+    || { echo "Failed to fetch utils.sh"; exit 1; }
 fi
-
-# Now we can safely source all helpers
 source "${SCRIPT_DIR}/utils.sh"
 ## ─── end BOOTSTRAP ────────────────────────────────────────────────────────
 
