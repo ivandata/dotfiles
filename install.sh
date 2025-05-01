@@ -2,26 +2,23 @@
 set -euo pipefail
 
 ## ─── BOOTSTRAP constants.sh & utils.sh ────────────────────────────────────────────
-# Ensure utils.sh is available so helper functions exist
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+# Create a temporary directory for bootstrap files
+TEMP_DIR=$(mktemp -d)
+trap 'rm -rf "$TEMP_DIR"' EXIT  # Clean up temp directory on exit
 
-# First, download constants.sh if not exist
-if [ ! -f "${SCRIPT_DIR}/constants.sh" ]; then
-  echo "[➜] Downloading constants.sh..."
-  curl -fsSL "https://raw.githubusercontent.com/ivandata/dotfiles/master/constants.sh" \
-    -o "${SCRIPT_DIR}/constants.sh" \
-    || { echo "Failed to fetch constants.sh"; exit 1; }
-fi
-source "${SCRIPT_DIR}/constants.sh"
+# Download constants.sh to temp directory
+echo "[➜] Downloading constants.sh..."
+curl -fsSL "https://raw.githubusercontent.com/ivandata/dotfiles/master/constants.sh" \
+  -o "${TEMP_DIR}/constants.sh" \
+  || { echo "Failed to fetch constants.sh"; exit 1; }
+source "${TEMP_DIR}/constants.sh"
 
-# Then, download utils.sh if not exist
-if [ ! -f "${SCRIPT_DIR}/${UTILS_SCRIPT}" ]; then
-  echo "[➜] Downloading helper functions..."
-  curl -fsSL "${UTILS_REMOTE_URL}" \
-    -o "${SCRIPT_DIR}/${UTILS_SCRIPT}" \
-    || { echo "Failed to fetch ${UTILS_SCRIPT}"; exit 1; }
-fi
-source "${SCRIPT_DIR}/${UTILS_SCRIPT}"
+# Download utils.sh to temp directory
+echo "[➜] Downloading helper functions..."
+curl -fsSL "${UTILS_REMOTE_URL}" \
+  -o "${TEMP_DIR}/utils.sh" \
+  || { echo "Failed to fetch ${UTILS_SCRIPT}"; exit 1; }
+source "${TEMP_DIR}/utils.sh"
 ## ─── end BOOTSTRAP ────────────────────────────────────────────────────────────────
 
 # Print header
@@ -61,11 +58,11 @@ download_dotfiles() {
     -C "${DOTFILES_INSTALL_DIRECTORY}" \
     || handle_error "Failed to extract dotfiles."
 
-  # Copy constants file to the install directory
-  if [ -f "${SCRIPT_DIR}/constants.sh" ]; then
-    cp "${SCRIPT_DIR}/constants.sh" "${DOTFILES_INSTALL_DIRECTORY}/${CONSTANTS_SCRIPT}"
-    chmod +x "${DOTFILES_INSTALL_DIRECTORY}/${CONSTANTS_SCRIPT}"
-  fi
+  # Copy bootstrap files from temp directory to install directory
+  cp "${TEMP_DIR}/constants.sh" "${DOTFILES_INSTALL_DIRECTORY}/${CONSTANTS_SCRIPT}"
+  cp "${TEMP_DIR}/utils.sh" "${DOTFILES_INSTALL_DIRECTORY}/${UTILS_SCRIPT}"
+  chmod +x "${DOTFILES_INSTALL_DIRECTORY}/${CONSTANTS_SCRIPT}"
+  chmod +x "${DOTFILES_INSTALL_DIRECTORY}/${UTILS_SCRIPT}"
 
   success_message "Dotfiles downloaded and extracted."
 }
@@ -98,7 +95,7 @@ copy_dotfiles() {
   success_message "Dotfiles (incl. scripts) copied to ${DOTFILES_DIRECTORY}."
 }
 
-  # Function to execute init.sh
+# Function to execute init.sh
 run_init_script() {
   header_message "Running init.sh..."
   if [ -f "${DOTFILES_DIRECTORY}/${INIT_SCRIPT}" ]; then
