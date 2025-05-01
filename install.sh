@@ -10,7 +10,12 @@ declare -r DOTFILES_ORIGIN="git@github.com:$GITHUB_REPOSITORY.git"
 # Determine the directory of the currently executing script
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
-# Source utils.sh from the same directory as install.sh
+# Bootstrap utils.sh if it’s missing, then source it
+if [ ! -f "$SCRIPT_DIR/utils.sh" ]; then
+  curl -fsSL "https://raw.githubusercontent.com/${GITHUB_REPOSITORY}/master/utils.sh" \
+  -o "$SCRIPT_DIR/utils.sh" \
+  || { echo "Failed to download utils.sh"; exit 1; }
+fi
 source "$SCRIPT_DIR/utils.sh"
 
 # Print header
