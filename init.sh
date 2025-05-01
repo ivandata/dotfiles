@@ -58,6 +58,8 @@ install_oh_my_zsh() {
     success_message "omz is already installed."
   else
     warning_message "omz not found. Installing..."
+    export RUNZSH=no
+    export CHSH=no
     if ! sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"; then
       handle_error "Failed to install omz."
     fi
