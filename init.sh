@@ -1,7 +1,9 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-source ./utils.sh
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+source "${SCRIPT_DIR}/utils.sh"
 
 # Function to load Homebrew environment from known locations
 load_brew_env() {
@@ -100,12 +102,14 @@ install_fnm() {
 
 # Apply macOS-specific settings
 apply_macos_settings() {
-  header_message "Applying macOS system preferences..."
-  if [ -f ./macos.sh ]; then
-    bash ./macos.sh || handle_error "Failed to apply macOS system preferences."
-  else
-    warning_message "macos.sh not found. Skipping macOS settings."
-  fi
+  header_message "Applying macOS system preferences…"
+    if [ -f "${SCRIPT_DIR}/macos.sh" ]; then
+      # shellcheck source=/dev/null
+      source "${SCRIPT_DIR}/macos.sh"
+      success_message "macOS settings applied"
+    else
+      warning_message "macos.sh not found. Skipping macOS settings."
+    fi
 }
 
 install_fonts() {

@@ -3,6 +3,7 @@
 ## ─── BOOTSTRAP utils.sh ────────────────────────────────────────────────────
 # Ensure utils.sh is available so helper functions (header_message, success_message, etc.) exist
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
 if [ ! -f "${SCRIPT_DIR}/utils.sh" ]; then
   echo "[➜] Downloading helper functions..."
   curl -fsSL "https://raw.githubusercontent.com/ivandata/dotfiles/master/utils.sh" \
