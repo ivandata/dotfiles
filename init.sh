@@ -51,30 +51,28 @@ install_pyenv() {
   ensure_installed "pyenv" "brew install pyenv"
 }
 
-# Ensure oh-my-zsh is installed
-
 install_oh_my_zsh() {
   header_message "Oh My Zsh…"
   if [ -d "${HOME}/.oh-my-zsh" ]; then
     success_message "Oh My Zsh already installed"
   else
-    warning_message "Installing Oh My Zsh…"
-    git clone https://github.com/ohmyzsh/ohmyzsh.git "${HOME}/.oh-my-zsh" \
-      || handle_error "git clone failed"
-    cp -n "${HOME}/.oh-my-zsh/templates/zshrc.zsh-template" "${HOME}/.zshrc" \
-      || warning_message "~/.zshrc exists; skipping template"
-    success_message "Oh My Zsh installed"
-  fi
-
-  # re-load brew env in case something overwritten it
-  if command -v brew &>/dev/null; then
-    eval "$($(brew --prefix)/bin/brew shellenv)"
-    hash -r  # re-hash brew binaries
+    warning_message "Oh My Zsh not found. Installing (manual clone)…"
+    git clone https://github.com/ohmyzsh/ohmyzsh.git "$HOME/.oh-my-zsh" \
+      || handle_error "Failed to clone Oh My Zsh."
+    cp -n "$HOME/.oh-my-zsh/templates/zshrc.zsh-template" "$HOME/.zshrc" \
+      || warning_message "~/.zshrc exists; skipping template copy."
+    success_message "Oh My Zsh installed (no shell exec)."
   fi
 }
 
 # Ensure Ghostty is installed
 install_ghostty() {
+  # re-load brew env in case something overwritten it
+  if command -v brew &>/dev/null; then
+    eval "$($(brew --prefix)/bin/brew shellenv)"
+    hash -r
+  fi
+  
   ensure_installed "ghostty" "brew install --cask ghostty"
 }
 
